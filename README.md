@@ -183,6 +183,25 @@ mAdapter.register(Image.TYPE_IMAGE, new HolderInjector<Image>() {
     }
 }).register(User.TYPE_USER, new UserHolder());
 
+// 如果holder代码太多，可以通过继承 HolderInjector 去写
+private static class UserHolder extends HolderInjector<User> {
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.item_user;
+    }
+
+    @Override
+    public void onInject(Context context, User data, int position, Object... objects) {
+        setText(R.id.name, data.getName());
+        setImageResource(R.id.avatar, data.getAvatarRes());
+
+        //如果你的控件找不到方便赋值的方法，可以通过 findViewById 去查找
+        TextView phone = findViewById(R.id.phone);
+        phone.setText(data.getPhone());
+    }
+}
+
 //赋值
 mAdapter.submitList(data);
 ```
