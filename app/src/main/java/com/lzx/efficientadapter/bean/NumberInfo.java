@@ -15,6 +15,4 @@ public class NumberInfo implements MultiTypeEntity<NumberInfo> {
     public boolean areItemsTheSame(NumberInfo newItem) {
         return number == newItem.number;
     }
-
-
 }

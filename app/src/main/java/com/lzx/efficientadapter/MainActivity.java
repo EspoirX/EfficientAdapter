@@ -130,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
             info2.number = index * 2;
 
             mAdapter.updateData(1, info);  //普通更新，会回调onInject方法，界面会闪烁
-            mAdapter.updateData(3, info2, true);
-            mHandler.postDelayed(mRunnable, 1000); //高效率刷新，会回调onInjectUpdate方法，界面不会闪烁
+            mAdapter.updateData(3, info2, true);//高效率刷新，会回调onInjectUpdate方法，界面不会闪烁
+            mHandler.postDelayed(mRunnable, 1000);
         }
     };
 
