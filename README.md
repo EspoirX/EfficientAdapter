@@ -44,7 +44,7 @@ mRecyclerView.setAdapter(mAdapter);
 ```
 
 如上面代码所示，创建 EfficientAdapter，并传入上下文，EfficientAdapter 默认使用 DiffUtil 工具，如果你不想使用，则在构造方法中
-将第二个方法设为 false 即可。
+将第二个参数设为 false 即可。
 
 调用 adapter 的 register 方法，传入 HolderInjector 实例，尖括号中填写对应的实体类，然后重写两个方法。
 
@@ -55,7 +55,7 @@ mRecyclerView.setAdapter(mAdapter);
 最后把 RecyclerView 设置 adapter。
 
 ## 第三步
-把数据付给 EfficientAdapter
+把数据赋给 EfficientAdapter
 ```java
 final List<NumberInfo> list = initData();
 mAdapter.submitList(list);
@@ -114,11 +114,11 @@ mAdapter.register(new HolderInjector<NumberInfo>() {
 
 //更新数据演示
 update.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-    index = 0;
-    mHandler.post(mRunnable);
-}
+    @Override
+    public void onClick(View v) {
+        index = 0;
+        mHandler.post(mRunnable);
+    }
 });
 
 Handler mHandler = new Handler();
@@ -145,7 +145,7 @@ Runnable mRunnable = new Runnable() {
 第一个参数传入该 holder 对应的 viewType 类型，第二个参数才传入 HolderInjector 实例。
 
 ## 多 viewType 时的使用例子：
-先看效果图
+先看效果图  
 <a href="art/1.png"><img src="art/1.png" width="40%"/></a>
 
 实现上图效果你只需要这简单的代码即可：
