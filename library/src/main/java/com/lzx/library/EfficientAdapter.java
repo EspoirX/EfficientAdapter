@@ -50,7 +50,6 @@ public class EfficientAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private void initAdapter(Context context, boolean isUseDiffUtil) {
         mContext = context;
         this.isUseDiffUtil = isUseDiffUtil;
-        mDataList = new ArrayList<>();
         typeHolders = new SparseArray<>();
         if (isUseDiffUtil) {
             mHelper = new AsyncListDiffer<>(this, new AsyncListDiffer.ListChangedCallback<MultiTypeEntity>() {
@@ -113,11 +112,10 @@ public class EfficientAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         if (list == null) {
             return;
         }
-        List<MultiTypeEntity> newList = (List<MultiTypeEntity>) new ArrayList<>(list);
         if (isUseDiffUtil) {
-            this.mHelper.submitList(newList);
+            this.mHelper.submitList((List<MultiTypeEntity>) list);
         } else {
-            mDataList = newList;
+            mDataList = (List<MultiTypeEntity>) list;
             notifyDataSetChanged();
         }
     }
@@ -187,7 +185,9 @@ public class EfficientAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         if (isUseDiffUtil) {
             mHelper.submitList(null);
         } else {
-            mDataList.clear();
+            if (mDataList != null) {
+                mDataList.clear();
+            }
         }
     }
 
@@ -214,12 +214,12 @@ public class EfficientAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
     public Object getItem(int position) {
-        return mDataList.get(position);
+        return mDataList != null ? mDataList.get(position) : null;
     }
 
     @Override
     public int getItemCount() {
-        return mDataList.size();
+        return mDataList != null ? mDataList.size() : 0;
     }
 
     @Override
