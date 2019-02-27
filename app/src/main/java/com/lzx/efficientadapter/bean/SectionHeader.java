@@ -24,4 +24,9 @@ public class SectionHeader implements MultiTypeEntity<SectionHeader> {
     public boolean areItemsTheSame(SectionHeader newItem) {
         return title.equals(newItem.title);
     }
+
+    @Override
+    public boolean areContentsTheSame(SectionHeader newItem) {
+        return true;
+    }
 }

@@ -7,4 +7,6 @@ public interface MultiTypeEntity<T extends MultiTypeEntity> {
     int getItemType();
 
     boolean areItemsTheSame(T newItem);
+
+    boolean areContentsTheSame(T newItem);
 }

@@ -71,7 +71,7 @@ public class EfficientAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 // 即返回两个user的age是否相同
                 @Override
                 public boolean areContentsTheSame(@NonNull MultiTypeEntity oldItem, @NonNull MultiTypeEntity newItem) {
-                    return true;
+                    return oldItem.areContentsTheSame(newItem);
                 }
             });
         }

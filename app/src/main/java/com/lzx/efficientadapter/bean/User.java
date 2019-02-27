@@ -42,4 +42,9 @@ public class User implements MultiTypeEntity<User> {
     public boolean areItemsTheSame(User newItem) {
         return name.equals(newItem.name);
     }
+
+    @Override
+    public boolean areContentsTheSame(User newItem) {
+        return true;
+    }
 }

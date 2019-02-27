@@ -25,4 +25,9 @@ public class Image implements MultiTypeEntity<Image> {
     public boolean areItemsTheSame(Image newItem) {
         return res == newItem.res;
     }
+
+    @Override
+    public boolean areContentsTheSame(Image newItem) {
+        return true;
+    }
 }

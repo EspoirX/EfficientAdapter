@@ -31,4 +31,9 @@ public class Music implements MultiTypeEntity<Music> {
     public boolean areItemsTheSame(Music newItem) {
         return name.equals(newItem.name);
     }
+
+    @Override
+    public boolean areContentsTheSame(Music newItem) {
+        return true;
+    }
 }
