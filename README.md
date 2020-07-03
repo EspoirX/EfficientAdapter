@@ -167,7 +167,7 @@ isForViewType 以及 bindViewHolder 方法。
 通过 RecycleView 的 setup 方法，我们可以把列表的实现压缩成以上短短的几行代码。setup 方法内部提供了几个方法：
 
 dataSource: 就是数据源的意思，如果你的数据源在创建 RecycleView 的时候已经确定，那么可以通过这个方法传进去。
-这个方法不写的话，RecycleView 还提供了 submitList，insertedData，removedData，updateDat 等扩展方法供使用。
+这个方法不写的话，RecycleView 还提供了 submitList，insertedData，removedData，updateData 等扩展方法供使用。
 
 withLayoutManager: 配置 RecycleView 的 LayoutManager 的地方，不写的话，默认是 LinearLayoutManager
 
