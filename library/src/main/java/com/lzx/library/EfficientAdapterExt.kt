@@ -50,6 +50,7 @@ class RecycleSetup<T> internal constructor(private val recyclerView: RecyclerVie
 
     var items = mutableListOf<T>()
     var adapter: EfficientAdapter<T>? = null
+    var context = recyclerView.context
 
     fun dataSource(items: MutableList<T>) {
         this.items.clear()
@@ -110,9 +111,9 @@ fun <T> RecyclerView.insertedData(position: Int, data: T) {
     }
 }
 
-fun <T> RecyclerView.removedData(position: Int) {
+fun RecyclerView.removedData(position: Int) {
     if (adapter != null && adapter is EfficientAdapter<*>) {
-        (adapter as EfficientAdapter<T>).removedData(position)
+        (adapter as EfficientAdapter<*>).removedData(position)
     }
 }
 

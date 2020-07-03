@@ -12,6 +12,8 @@ import com.lzx.library.EfficientAdapter
 import com.lzx.library.ViewHolderCreator
 import com.lzx.library.addItem
 import com.lzx.library.efficientAdapter
+import com.lzx.library.setImageResource
+import com.lzx.library.setText
 import com.lzx.library.setup
 import com.lzx.library.submitList
 import kotlinx.android.synthetic.main.activity_list.*
@@ -140,13 +142,12 @@ class ListActivity : AppCompatActivity() {
             addItem(R.layout.item_music) {
                 isForViewType { it is Music }
                 bindViewHolder { data, _, _ ->
-                    val music = data as Music?
-                    setText(R.id.name, music!!.name)
+                    val music = data as Music
+                    setText(R.id.name, music.name)
                     setImageResource(R.id.cover, music.coverRes)
                 }
             }
-        }
-        recycle_view.adapter = adapter
+        }.attach(recycle_view)
         adapter?.submitList(data)
     }
 
