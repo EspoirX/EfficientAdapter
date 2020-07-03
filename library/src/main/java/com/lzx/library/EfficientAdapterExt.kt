@@ -33,7 +33,7 @@ class ViewHolderDsl<T>(private val resourceId: Int) : ViewHolderCreator<T>() {
     }
 
     override fun isForViewType(data: T?, position: Int): Boolean {
-        return viewType?.invoke(data) ?: data != null
+        return viewType?.invoke(data) ?: (data != null)
     }
 
     override fun getResourceId() = resourceId
