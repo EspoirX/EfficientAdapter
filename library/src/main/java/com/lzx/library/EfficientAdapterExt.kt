@@ -3,16 +3,19 @@ package com.lzx.library
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 
-fun <T : Any> efficientAdapter(init: EfficientAdapter<T>.() -> Unit)
-        : EfficientAdapter<T> {
+/**
+ * dsl 使用
+ */
+fun <T : Any> efficientAdapter(init: EfficientAdapter<T>.() -> Unit): EfficientAdapter<T> {
     val adapter = EfficientAdapter<T>()
     adapter.init()
     return adapter
 }
 
-fun <T : Any> EfficientAdapter<T>.addItem(
-        resourceId: Int, init: ViewHolderDsl<T>.() -> Unit
-) {
+/**
+ * 注册 item 的 dsl
+ */
+fun <T : Any> EfficientAdapter<T>.addItem(resourceId: Int, init: ViewHolderDsl<T>.() -> Unit) {
     val holder = ViewHolderDsl<T>(resourceId)
     holder.init()
     register(holder)
@@ -91,6 +94,9 @@ class RecycleSetup<T> internal constructor(private val recyclerView: RecyclerVie
     fun getItem(position: Int): T = items[position]
 }
 
+/**
+ *  RecyclerView 扩展函数
+ */
 fun <T> RecyclerView.setup(block: RecycleSetup<T>.() -> Unit): RecycleSetup<T> {
     val setup = RecycleSetup<T>(this).apply(block)
     if (layoutManager == null) {
