@@ -2,6 +2,7 @@ package com.lzx.library
 
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.ViewGroup
 
 open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -29,23 +30,32 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             viewHolder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>
     ) {
         val holder = getHolderForViewType(viewHolder.itemViewType)
-                ?: throw java.lang.NullPointerException(
+                ?: throw NullPointerException(
                         "No Holder added for ViewType $viewHolder.itemViewType")
         holder.registerItemView(viewHolder.itemView)
-        holder.onBindViewHolder(items?.get(position), items, position, holder, payloads)
+        // holder.onBindViewHolder(items?.get(position), items, position, holder, payloads)
     }
 
     override fun getItemViewType(position: Int): Int {
         if (items == null) {
             throw NullPointerException("adapter data source is null")
         }
+        Log.i("XIAN", "-----------------------------------")
         for (i in 0 until typeHolders.size()) {
             val holder = typeHolders.valueAt(i)
-            val data = items!!.getOrNull(position)
+            val data = items?.getOrNull(position)
+
+
+//            Log.i("XIAN", "it = " + data +
+//                    " isForViewType = " + holder.isForViewType(data,
+//                    position) + " holder = " + holder)
+
             if (holder.isForViewType(data, position)) {
                 return typeHolders.keyAt(i)
             }
         }
+
+
         val errorMessage: String
         errorMessage = if (items is List<*>) {
             val itemString = (items as List<*>)[position].toString()
@@ -53,7 +63,7 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         } else {
             "No holder added for item at position=$position. items=$items"
         }
-        throw java.lang.NullPointerException(errorMessage)
+        throw NullPointerException(errorMessage)
     }
 
     private fun getHolderForViewType(viewType: Int): ViewHolderCreator<T>? {

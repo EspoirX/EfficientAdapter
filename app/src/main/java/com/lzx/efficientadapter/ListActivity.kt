@@ -3,7 +3,7 @@ package com.lzx.efficientadapter
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.GridLayoutManager.SpanSizeLookup
+import android.util.Log
 import android.widget.TextView
 import com.lzx.efficientadapter.bean.Image
 import com.lzx.efficientadapter.bean.Music
@@ -11,23 +11,37 @@ import com.lzx.efficientadapter.bean.SectionHeader
 import com.lzx.efficientadapter.bean.User
 import com.lzx.library.EfficientAdapter
 import com.lzx.library.ViewHolderCreator
+import com.lzx.library.addItem
+import com.lzx.library.efficientAdapter
 import kotlinx.android.synthetic.main.activity_list.*
 import java.util.ArrayList
 
 class ListActivity : AppCompatActivity() {
-    private var mAdapter: EfficientAdapter<Any>? = null
     private val data: MutableList<Any> = ArrayList()
+    var adapter: EfficientAdapter<Any>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        val gridLayoutManager = GridLayoutManager(this, 3)
-        gridLayoutManager.spanSizeLookup = object : SpanSizeLookup() {
+
+        initData()
+
+
+        val gridLayoutManager = GridLayoutManager(this@ListActivity, 3)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (mAdapter?.getItem(position) is Image) 1 else 3
+                return if (adapter?.getItem(position) is Image) 1 else 3
             }
         }
         recycle_view.layoutManager = gridLayoutManager
-        mAdapter = EfficientAdapter<Any>()
+
+//        impl1()
+        impl2()
+
+        adapter?.submitList(data)
+    }
+
+    private fun impl1() {
+        adapter = EfficientAdapter<Any>()
                 .register(object : ViewHolderCreator<Any>() {
                     override fun isForViewType(data: Any?, position: Int) = data is SectionHeader
                     override fun getResourceId() = R.layout.item_setion_header
@@ -88,10 +102,49 @@ class ListActivity : AppCompatActivity() {
                         setImageResource(R.id.cover, music.coverRes)
                     }
                 }).attach(recycle_view)
+    }
 
-        initData()
-        //赋值
-        mAdapter?.submitList(data)
+    private fun impl2() {
+        adapter = efficientAdapter<Any> {
+            addItem(R.layout.item_setion_header) {
+                isForViewType {
+                    val result = it is SectionHeader
+                    Log.i("XIAN", "it = " + it + " result = " + result + " holder = " + this)
+                    return@isForViewType result
+                }
+                bindViewHolder { data, _, _ ->
+                    val header = data as SectionHeader
+                    setText(R.id.section_title, header.title)
+                }
+            }
+            addItem(R.layout.item_user) {
+                isForViewType { return@isForViewType it is User }
+                bindViewHolder { data, _, _ ->
+                    val user = data as User
+                    setText(R.id.name, user.name)
+                    setImageResource(R.id.avatar, user.avatarRes)
+                    //如果你的控件找不到方便赋值的方法，可以通过 findViewById 去查找
+                    val phone = findViewById<TextView>(R.id.phone)
+                    phone.text = user.phone
+                }
+            }
+            addItem(R.layout.item_image) {
+                isForViewType { return@isForViewType it is Image }
+                bindViewHolder { data, _, _ ->
+                    val image = data as Image
+                    setImageResource(R.id.imageView, image.res)
+                }
+            }
+            addItem(R.layout.item_music) {
+                isForViewType { return@isForViewType it is Music }
+                bindViewHolder { data, _, _ ->
+                    val music = data as Music?
+                    setText(R.id.name, music!!.name)
+                    setImageResource(R.id.cover, music.coverRes)
+                }
+            }
+        }
+        recycle_view.adapter = adapter
     }
 
     private fun initData() {
