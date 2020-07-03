@@ -1,219 +1,112 @@
 # EfficientAdapter
-一个可以提高开发效率的adapter
+一个可以提高开发效率的 adapter
 
 # 使用方法
 
 ## 第一步
-将你列表中使用的实体类实现 MultiTypeEntity 接口：
+定义好你的实体类，比如 NumberInfo，Image，String... 之类的。
+
+## Java 用法
 ```java
-public class NumberInfo implements MultiTypeEntity<NumberInfo> {
-    public int number;
+EfficientAdapter<NumberInfo> adapter = new EfficientAdapter<NumberInfo>()
+       .register(new ViewHolderCreator<NumberInfo>() {
+           @Override
+           public boolean isForViewType(NumberInfo data, int position) {
+               return data != null;
+           }
 
-    @Override
-    public int getItemType() {
-        return 0;
-    }
+           @Override
+           public int getResourceId() {
+               return R.layout.layout_item;
+           }
 
-    @Override
-    public boolean areItemsTheSame(NumberInfo newItem) {
-        return number == newItem.number;
-    }
+           @Override
+           public void onBindViewHolder(NumberInfo data, List<NumberInfo> items,
+                   int position, @NotNull ViewHolderCreator<NumberInfo> holder,
+                   @NotNull List<Object> payloads) {
+               setText(this, R.id.number, String.valueOf(data.number));
+           }
+       }).attach(recyclerView);
+adapter.submitList(data);
+```
+
+1. 首先我们 new 一个 EfficientAdapter 的实例，在泛型里面传入你的实体类类型。
+2. 然后我们调用 register 方法，并传入一个 ViewHolderCreator 实例，register 方法的作用是注册一个 ViewHolder 到 Adapter 中，
+而 ViewHolderCreator 封装了 ViewHolder 的创建。
+3. 如果你是单类型列表，那么你只需要调用 register 一次就可以了，如果是多类型列表，那么有多少个类型，你就调用 register 多少次。
+4. isForViewType 方法的作用是区分 ViewType，注意它的返回类型是 boolean，在参数中，你可以拿到具体 item 的数据 data，以及所
+在的 position。
+5. 如果你是单类型的列表，你可以跟例子代码一样简单的返回 data != null 即可，那么在所有 item 里面这个条件都是成立的。
+如果你是多类型的列表，那你可以更加参数去判断：
+
+如果你的数据源由多个实体类组成，比如：
+```java
+private List<Object> data = new ArrayList<>();
+data.add(new User("Marry", 17, R.drawable.icon2, "123456789XX"));
+data.add(new SectionHeader("My Images"));
+data.add(new Image(R.drawable.cover1));
+```
+
+那么在构建 EfficientAdapter 时，泛型传入的自然是 Object，然后在 isForViewType 方法中你可以这样区分类型：
+```java
+ // 代表这是 User 类型
+ public boolean isForViewType(Object data, int position) {
+   return data instanceof User;
 }
-```
-因为只有一种类型，所以 getItemType 不用管，如果你希望使用 DiffUtil ，那么我们需要重写 areItemsTheSame 方法，该方法对应着
-DiffUtil 的 areItemsTheSame 方法。
 
-## 第二步
-创建 EfficientAdapter 
-```java
-EfficientAdapter mAdapter = new EfficientAdapter(this);
-//注册holder
-mAdapter.register(new HolderInjector<NumberInfo>() {
-    @Override
-    public int getLayoutRes() {
-        return R.layout.layout_item;
-    }
+ // 代表这是 SectionHeader 类型
+ public boolean isForViewType(Object data, int position) {
+   return data instanceof SectionHeader;
+}
 
-    @Override
-    public void onInject(Context context, NumberInfo data, int position, Object... objects) {
-        setText(R.id.number, String.valueOf(data.number));
-    }
-});
-//设置adapter
-mRecyclerView.setAdapter(mAdapter);
-```
-
-如上面代码所示，创建 EfficientAdapter，并传入上下文，EfficientAdapter 默认使用 DiffUtil 工具，如果你不想使用，则在构造方法中
-将第二个参数设为 false 即可。
-
-调用 adapter 的 register 方法，传入 HolderInjector 实例，尖括号中填写对应的实体类，然后重写两个方法。
-
-- getLayoutRes 方法传入该 holder 对应的布局
-- onInject 方法中实现控件的赋值，HolderInjector 中提供了很多方便控件赋值的方法，比如 setText，setImageResource 等，如果这些方法
-不适合使用在你的控件中，则可以使用 findViewById 方法查找你的控件。
-
-最后把 RecyclerView 设置 adapter。
-
-## 第三步
-把数据赋给 EfficientAdapter
-```java
-final List<NumberInfo> list = initData();
-mAdapter.submitList(list);
-
-//模拟网络数据
-private List<NumberInfo> initData() {
-    List<NumberInfo> list = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-        NumberInfo info = new NumberInfo();
-        info.number = i;
-        list.add(info);
-    }
-    return list;
+ // 代表这是 Image 类型
+ public boolean isForViewType(Object data, int position) {
+   return data instanceof Image;
 }
 ```
 
-数据赋值使用 submitList 方法。
-
-完成这三步，即可轻松实现列表功能。
-
-## 其他说明
-1. 除了 submitList 方法，EfficientAdapter 还提供了 insertedData ，removedData，updateData 方法，分别对应 添加数据，
-移除数据，和更新数据功能。
-
-2. onInject 方法中有几个参数，相信除了 Object 参数其他应该都知道是什么意思，那么 Object 参数的作用是：
-如果 holder 中还需要用到 context，data，position 这三个参数外的其他参数时，那么可以通过 adapter.setObjects 方法，给
-Object 参数赋值，这样你就能使用自定义参数了。
-
-3. 调用 updateData 方法里面其实是调用了 notifyItemChanged 方法，这个方法会导致更新的 item 有闪烁的效果，
-如果你不想要这个闪烁的效果，可以在调用 updateData 方法时传入第三个参数为 true，这时候会使用更高效率的刷新功能，而且界面不会闪烁，
-注意如果你第三个参数为 true 时，HolderInjector 中回调的不是 onInject 方法，而是 onInjectUpdate 方法，你需要重写它。例子：
+如果你的数据源只有一个实体类，但是实体类里面有某个字段可以区分类型，你可以这样：
 ```java
-mAdapter.register(new HolderInjector<NumberInfo>() {
-    @Override
-    public int getLayoutRes() {
-        return R.layout.layout_item;
-    }
-
-    /**
-     * 控件赋值
-     */
-    @Override
-    public void onInject(Context context, NumberInfo data, int position, Object... objects) {
-        setText(R.id.number, String.valueOf(data.number));
-    }
-
-    /**
-     * 高效率刷新，界面不会闪烁
-     */
-    @Override
-    public void onInjectUpdate(Context context, NumberInfo data, int position, Object... objects) {
-        super.onInjectUpdate(context, data, position, objects);
-        setText(R.id.number, String.valueOf(data.number));
-    }
-});
-
-//更新数据演示
-update.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        index = 0;
-        mHandler.post(mRunnable);
-    }
-});
-
-Handler mHandler = new Handler();
-int index = 0;
-Runnable mRunnable = new Runnable() {
-    @Override
-    public void run() {
-        index++;
-
-        NumberInfo info = new NumberInfo();
-        info.number = index;
-
-        NumberInfo info2 = new NumberInfo();
-        info2.number = index * 2;
-
-        mAdapter.updateData(1, info);  //普通更新，会回调onInject方法，界面会闪烁
-        mAdapter.updateData(3, info2, true);//高效率刷新，会回调onInjectUpdate方法，界面不会闪烁
-        mHandler.postDelayed(mRunnable, 1000); 
-    }
-};
-```
-
-4. 如果你的列表有多个 viewType，那么你的实体类中需要重写 getItemType 方法，里面返回对应的 viewType，然后调用 register 的时候，
-第一个参数传入该 holder 对应的 viewType 类型，第二个参数才传入 HolderInjector 实例。
-
-## 多 viewType 时的使用例子：
-先看效果图  
-<a href="art/1.png"><img src="art/1.png" width="40%"/></a>
-
-实现上图效果你只需要这简单的代码即可：
-```java
-mAdapter.register(Image.TYPE_IMAGE, new HolderInjector<Image>() {
-    @Override
-    public int getLayoutRes() {
-        return R.layout.item_image;
-    }
-
-    @Override
-    public void onInject(Context context, Image data, int position, Object... objects) {
-        setImageResource(R.id.imageView, data.getRes());
-    }
-}).register(Music.TYPE_MUSIC, new HolderInjector<Music>() {
-    @Override
-    public int getLayoutRes() {
-        return R.layout.item_music;
-    }
-
-    @Override
-    public void onInject(Context context, Music data, int position, Object... objects) {
-        setText(R.id.name, data.getName());
-        setImageResource(R.id.cover, data.getCoverRes());
-    }
-}).register(SectionHeader.TYPE_HEADER, new HolderInjector<SectionHeader>() {
-    @Override
-    public int getLayoutRes() {
-        return R.layout.item_setion_header;
-    }
-
-    @Override
-    public void onInject(Context context, SectionHeader data, int position, Object... objects) {
-        setText(R.id.section_title, data.getTitle());
-    }
-}).register(User.TYPE_USER, new UserHolder());
-
-// 如果holder代码太多，可以通过继承 HolderInjector 去写
-private static class UserHolder extends HolderInjector<User> {
-
-    @Override
-    public int getLayoutRes() {
-        return R.layout.item_user;
-    }
-
-    @Override
-    public void onInject(Context context, User data, int position, Object... objects) {
-        setText(R.id.name, data.getName());
-        setImageResource(R.id.avatar, data.getAvatarRes());
-
-        //如果你的控件找不到方便赋值的方法，可以通过 findViewById 去查找
-        TextView phone = findViewById(R.id.phone);
-        phone.setText(data.getPhone());
-    }
+ // 代表这是 User 类型
+ public boolean isForViewType(ListInfo data, int position) {
+   return data.type = ListInfo.USER
 }
 
-//赋值
-mAdapter.submitList(data);
+ // 代表这是 SectionHeader 类型
+ public boolean isForViewType(ListInfo data, int position) {
+   return data.type = ListInfo.HEADER
+}
+
+ // 代表这是 Image 类型
+ public boolean isForViewType(ListInfo data, int position) {
+   return data.type = ListInfo.IMAGE
+}
 ```
+更多类型的判断可根据自己项目的具体逻辑而定。
+
+6. getResourceId 方法返回的是 ViewHolder 具体的布局
+7. onBindViewHolder 是实现 item 具体逻辑的方法，在 ViewHolderCreator 里面，实现了很多类似 setText，setImageResource
+等等之类的方法，目的是可以方便操作。也实现了 findViewById 方法，你可以通过它来找到你的控件，然后做具体逻辑。
+8.创建完 adapter 后，你就可以把它配置给 RecycleView 了。当然，EfficientAdapter 提供了 attach 方法，直接传入 RecycleView，方便配置。
+9. 调用 adapter 的 submitList 方法，就可以将数据源绑定了。除了 submitList ，还提供了 insertedData，removedData，updateData 方法，
+其中 updateData 第三个参数如果为 true 的话，回调的是 Adapter 的
+onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>)
+如果为 false 的话，回调的是 Adapter 的
+onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int)
+默认为 true。
+
+
+## Kotlin 用法
+
+
+
+
+
+
+
+
 
 全部代码都在项目中有具体例子，请自行下载体验。
-
-
-感谢：  
-[SlimAdapter](https://github.com/MEiDIK/SlimAdapter)  
-[diffadapter](https://github.com/SilenceDut/diffadapter)  
-[MultiTypeRecyclerViewAdapter](https://github.com/crazysunj/MultiTypeRecyclerViewAdapter)  
-
 
 
 ## License

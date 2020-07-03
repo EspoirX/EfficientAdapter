@@ -49,8 +49,7 @@ class ListActivity : AppCompatActivity() {
                     override fun onBindViewHolder(
                             data: Any?,
                             items: MutableList<Any>?, position: Int,
-                            holder: ViewHolderCreator<Any>,
-                            payloads: MutableList<Any>
+                            holder: ViewHolderCreator<Any>
                     ) {
                         val header = data as SectionHeader
                         setText(R.id.section_title, header.title)
@@ -62,8 +61,7 @@ class ListActivity : AppCompatActivity() {
                     override fun onBindViewHolder(
                             data: Any?,
                             items: MutableList<Any>?, position: Int,
-                            holder: ViewHolderCreator<Any>,
-                            payloads: MutableList<Any>
+                            holder: ViewHolderCreator<Any>
                     ) {
                         val user = data as User
                         setText(R.id.name, user.name)
@@ -81,8 +79,7 @@ class ListActivity : AppCompatActivity() {
                     override fun onBindViewHolder(
                             data: Any?,
                             items: MutableList<Any>?, position: Int,
-                            holder: ViewHolderCreator<Any>,
-                            payloads: MutableList<Any>
+                            holder: ViewHolderCreator<Any>
                     ) {
                         val image = data as Image
                         setImageResource(R.id.imageView, image.res)
@@ -94,8 +91,7 @@ class ListActivity : AppCompatActivity() {
                     override fun onBindViewHolder(
                             data: Any?,
                             items: MutableList<Any>?, position: Int,
-                            holder: ViewHolderCreator<Any>,
-                            payloads: MutableList<Any>
+                            holder: ViewHolderCreator<Any>
                     ) {
                         val music = data as Music?
                         setText(R.id.name, music!!.name)

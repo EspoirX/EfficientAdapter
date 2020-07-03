@@ -17,8 +17,7 @@ abstract class ViewHolderCreator<T> {
             data: T?,
             items: MutableList<T>?,
             position: Int,
-            holder: ViewHolderCreator<T>,
-            payloads: MutableList<Any>
+            holder: ViewHolderCreator<T>
     )
 
     var itemView: View? = null

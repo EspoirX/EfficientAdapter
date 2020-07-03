@@ -32,7 +32,7 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                 ?: throw NullPointerException(
                         "No Holder added for ViewType " + viewHolder.itemViewType)
         holder.registerItemView(viewHolder.itemView)
-        holder.onBindViewHolder(items?.get(position), items, position, holder, payloads)
+        holder.onBindViewHolder(items?.get(position), items, position, holder)
     }
 
     override fun getItemViewType(position: Int): Int {
