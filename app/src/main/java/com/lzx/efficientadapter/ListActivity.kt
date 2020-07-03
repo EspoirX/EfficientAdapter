@@ -3,6 +3,7 @@ package com.lzx.efficientadapter
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.widget.TextView
 import com.lzx.efficientadapter.bean.Image
 import com.lzx.efficientadapter.bean.Music
@@ -158,6 +159,7 @@ class ListActivity : AppCompatActivity() {
                 }
                 return@withLayoutManager gridLayoutManager
             }
+            withLayoutManager { LinearLayoutManager(context) }
             adapter {
                 addItem(R.layout.item_setion_header) {
                     isForViewType { it is SectionHeader }
