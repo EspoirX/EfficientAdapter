@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
             dataSource(initData())
             adapter {
                 addItem(R.layout.layout_item) {
-                    isForViewType { data, position -> data != null }
                     bindViewHolder { data, _, _ ->
                         setText(R.id.number, data?.number.toString())
                     }
