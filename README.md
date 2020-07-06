@@ -183,7 +183,7 @@ adapter: 就是配置 adapter 的地方，用法跟上面 DSL 的用法一样。
 
 下面是例子效果图：
 
-<a href="art/22.png"><img src="art/22.png" width="30%" /></a>
+<a href="art/22.jpg"><img src="art/22.jpg" width="30%" /></a>
 <a href="art/1.png"><img src="art/1.png" width="30%" /></a>
 
 ## License
