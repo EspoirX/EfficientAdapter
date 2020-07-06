@@ -3,12 +3,18 @@ package com.lzx.library
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+
+class BaseViewHolder(parent: ViewGroup, resource: Int) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context).inflate(resource, parent, false)
+)
 
 abstract class ViewHolderCreator<T> {
     abstract fun isForViewType(data: T?, position: Int): Boolean

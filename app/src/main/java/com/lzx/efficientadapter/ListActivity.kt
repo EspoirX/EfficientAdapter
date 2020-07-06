@@ -34,6 +34,9 @@ class ListActivity : AppCompatActivity() {
         impl3()
     }
 
+    /**
+     * 第一种实现方式
+     */
     private fun impl1() {
         val gridLayoutManager = GridLayoutManager(this@ListActivity, 3)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -102,6 +105,9 @@ class ListActivity : AppCompatActivity() {
         adapter?.submitList(data)
     }
 
+    /**
+     * 第二种实现方式
+     */
     private fun impl2() {
         val gridLayoutManager = GridLayoutManager(this@ListActivity, 3)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -112,14 +118,14 @@ class ListActivity : AppCompatActivity() {
         recycle_view.layoutManager = gridLayoutManager
         adapter = efficientAdapter<Any> {
             addItem(R.layout.item_setion_header) {
-                isForViewType { it is SectionHeader }
+                isForViewType { data, _ -> data is SectionHeader }
                 bindViewHolder { data, _, _ ->
                     val header = data as SectionHeader
                     setText(R.id.section_title, header.title)
                 }
             }
             addItem(R.layout.item_user) {
-                isForViewType { it is User }
+                isForViewType { data, _ -> data is User }
                 bindViewHolder { data, _, _ ->
                     val user = data as User
                     setText(R.id.name, user.name)
@@ -130,14 +136,14 @@ class ListActivity : AppCompatActivity() {
                 }
             }
             addItem(R.layout.item_image) {
-                isForViewType { it is Image }
+                isForViewType { data, _ -> data is Image }
                 bindViewHolder { data, _, _ ->
                     val image = data as Image
                     setImageResource(R.id.imageView, image.res)
                 }
             }
             addItem(R.layout.item_music) {
-                isForViewType { it is Music }
+                isForViewType { data, _ -> data is Music }
                 bindViewHolder { data, _, _ ->
                     val music = data as Music
                     setText(R.id.name, music.name)
@@ -148,6 +154,9 @@ class ListActivity : AppCompatActivity() {
         adapter?.submitList(data)
     }
 
+    /**
+     * 第三种实现方式
+     */
     private fun impl3() {
         recycle_view.setup<Any> {
             withLayoutManager {
@@ -159,17 +168,16 @@ class ListActivity : AppCompatActivity() {
                 }
                 return@withLayoutManager gridLayoutManager
             }
-            withLayoutManager { LinearLayoutManager(context) }
             adapter {
                 addItem(R.layout.item_setion_header) {
-                    isForViewType { it is SectionHeader }
+                    isForViewType { data, _ -> data is SectionHeader }
                     bindViewHolder { data, _, _ ->
                         val header = data as SectionHeader
                         setText(R.id.section_title, header.title)
                     }
                 }
                 addItem(R.layout.item_user) {
-                    isForViewType { it is User }
+                    isForViewType { data, _ -> data is User }
                     bindViewHolder { data, _, _ ->
                         val user = data as User
                         setText(R.id.name, user.name)
@@ -180,14 +188,14 @@ class ListActivity : AppCompatActivity() {
                     }
                 }
                 addItem(R.layout.item_image) {
-                    isForViewType { it is Image }
+                    isForViewType { data, _ -> data is Image }
                     bindViewHolder { data, _, _ ->
                         val image = data as Image
                         setImageResource(R.id.imageView, image.res)
                     }
                 }
                 addItem(R.layout.item_music) {
-                    isForViewType { it is Music }
+                    isForViewType { data, _ -> data is Music }
                     bindViewHolder { data, _, _ ->
                         val music = data as Music?
                         setText(R.id.name, music!!.name)
