@@ -118,7 +118,7 @@ onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int)
 ```kotlin
 val adapter = EfficientAdapter<NumberInfo>()
         .register(object : ViewHolderCreator<NumberInfo>() {
-            override fun isForViewType(data: NumberInfo?, position: Int) = data != null
+            override fun isForViewType { data, _ -> data != null }
             override fun getResourceId() = R.layout.layout_item
             override fun onBindViewHolder(
                     data: NumberInfo?, items: MutableList<NumberInfo>?, position: Int,
@@ -135,7 +135,7 @@ adapter.submitList(data)
 ```kotlin
 val adapter = efficientAdapter<NumberInfo> {
     addItem(R.layout.layout_item) {
-        isForViewType { it != null }
+        isForViewType { data, _ -> data != null }
         bindViewHolder { data, position, holder ->
             setText(R.id.number, data?.number.toString())
         }
@@ -160,7 +160,7 @@ isForViewType 以及 bindViewHolder 方法。
     withLayoutManager { LinearLayoutManager(context) }
     adapter {
         addItem(R.layout.layout_item) {
-            isForViewType { it != null }
+            isForViewType { data, _ -> data != null }
             bindViewHolder { data, _, _ ->
                 setText(R.id.number, data?.number.toString())
             }
@@ -183,7 +183,7 @@ adapter: 就是配置 adapter 的地方，用法跟上面 DSL 的用法一样。
 
 下面是例子效果图：
 
-<a href="art/22.png"><img src="art/1.png" width="30%" /></a>
+<a href="art/22.png"><img src="art/22.png" width="30%" /></a>
 <a href="art/1.png"><img src="art/1.png" width="30%" /></a>
 
 ## License
