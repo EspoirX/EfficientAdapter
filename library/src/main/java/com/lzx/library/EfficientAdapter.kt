@@ -2,9 +2,10 @@ package com.lzx.library
 
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.ViewGroup
 
-open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+open class EfficientAdapter<T> : RecyclerView.Adapter<BaseViewHolder>() {
 
     companion object {
         private const val FALLBACK_DELEGATE_VIEW_TYPE = Int.MAX_VALUE - 1
@@ -13,25 +14,26 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     var items: MutableList<T>? = mutableListOf()
     private val typeHolders: SparseArrayCompat<ViewHolderCreator<T>> = SparseArrayCompat()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val holder = getHolderForViewType(viewType)
-                ?: throw NullPointerException("No Holder added for ViewType $viewType")
-        return BaseViewHolder(parent, holder.getResourceId())
+            ?: throw NullPointerException("No Holder added for ViewType $viewType")
+        val view = LayoutInflater.from(parent.context).inflate(holder.getResourceId(), parent, false)
+        return BaseViewHolder(view)
     }
 
     override fun getItemCount(): Int = items?.size ?: 0
 
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: BaseViewHolder, position: Int) {
         onBindViewHolder(viewHolder, position, mutableListOf())
     }
 
     override fun onBindViewHolder(
-            viewHolder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>
+        viewHolder: BaseViewHolder, position: Int, payloads: MutableList<Any>
     ) {
         val holder = getHolderForViewType(viewHolder.itemViewType)
-                ?: throw NullPointerException(
-                        "No Holder added for ViewType " + viewHolder.itemViewType)
-        holder.registerItemView(viewHolder.itemView)
+            ?: throw NullPointerException(
+                "No Holder added for ViewType " + viewHolder.itemViewType)
+        holder.registerViewHolder(viewHolder)
         holder.onBindViewHolder(items?.get(position), items, position, holder)
     }
 
@@ -49,7 +51,7 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
         //找不到匹配的 viewType
         throw NullPointerException(
-                "No holder added that matches at position=$position in data source")
+            "No holder added that matches at position=$position in data source")
     }
 
     private fun getHolderForViewType(viewType: Int): ViewHolderCreator<T>? {
@@ -65,8 +67,8 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             viewType++
             require(viewType != FALLBACK_DELEGATE_VIEW_TYPE) {
                 "Oops, we are very close to Integer.MAX_VALUE. " +
-                        "It seems that there are no more free and " +
-                        "unused view type integers left to add another holder."
+                    "It seems that there are no more free and " +
+                    "unused view type integers left to add another holder."
             }
         }
         return addTypeHolder(viewType, holder)
@@ -81,11 +83,11 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         }
         require(viewType != FALLBACK_DELEGATE_VIEW_TYPE) {
             "The view type = " + FALLBACK_DELEGATE_VIEW_TYPE +
-                    " is reserved for fallback adapter holder Please use another view type."
+                " is reserved for fallback adapter holder Please use another view type."
         }
         require(typeHolders.get(viewType) == null) {
             "An holder is already registered for the viewType = $viewType. Already registered holder is " +
-                    typeHolders.get(viewType)
+                typeHolders.get(viewType)
         }
         typeHolders.put(viewType, holder)
     }
@@ -132,8 +134,8 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             viewType++
             require(viewType != FALLBACK_DELEGATE_VIEW_TYPE) {
                 "Oops, we are very close to Integer.MAX_VALUE. " +
-                        "It seems that there are no more free" +
-                        "and unused view type integers left to add another holder."
+                    "It seems that there are no more free" +
+                    "and unused view type integers left to add another holder."
             }
         }
         return register(viewType, holder)
@@ -145,7 +147,7 @@ open class EfficientAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     fun register(viewType: Int, holder: ViewHolderCreator<T>) = apply {
         require(viewType != FALLBACK_DELEGATE_VIEW_TYPE) {
             "The view type = $FALLBACK_DELEGATE_VIEW_TYPE is reserved " +
-                    "for fallback adapter holder). Please use another view type."
+                "for fallback adapter holder). Please use another view type."
         }
         typeHolders.put(viewType, holder)
     }

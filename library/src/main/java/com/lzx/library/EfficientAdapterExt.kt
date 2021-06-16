@@ -24,7 +24,7 @@ fun <T : Any> EfficientAdapter<T>.addItem(resourceId: Int, init: ViewHolderDsl<T
 class ViewHolderDsl<T>(private val resourceId: Int) : ViewHolderCreator<T>() {
 
     private var viewType: ((data: T?, position: Int) -> Boolean)? = null
-    private var viewHolder: ((data: T?, position: Int, holder: ViewHolderCreator<T>) -> Unit)? =
+    private var holderCreator: ((data: T?, position: Int, holder: ViewHolderCreator<T>) -> Unit)? =
             null
 
     fun isForViewType(viewType: (data: T?, position: Int) -> Boolean) {
@@ -32,7 +32,7 @@ class ViewHolderDsl<T>(private val resourceId: Int) : ViewHolderCreator<T>() {
     }
 
     fun bindViewHolder(holder: (data: T?, position: Int, holder: ViewHolderCreator<T>) -> Unit) {
-        viewHolder = holder
+        holderCreator = holder
     }
 
     override fun isForViewType(data: T?, position: Int): Boolean {
@@ -42,7 +42,7 @@ class ViewHolderDsl<T>(private val resourceId: Int) : ViewHolderCreator<T>() {
     override fun getResourceId() = resourceId
 
     override fun onBindViewHolder(data: T?, items: MutableList<T>?, position: Int, holder: ViewHolderCreator<T>) {
-        viewHolder?.invoke(data, position, holder)
+        holderCreator?.invoke(data, position, holder)
     }
 }
 

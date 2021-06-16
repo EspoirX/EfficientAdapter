@@ -3,42 +3,52 @@ package com.lzx.library
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.support.annotation.IdRes
 import android.support.v7.widget.RecyclerView
+import android.util.SparseArray
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 
-class BaseViewHolder(parent: ViewGroup, resource: Int) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(resource, parent, false)
-)
+class BaseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val views = SparseArray<View>()
+
+    fun <T : View> findViewById(@IdRes viewId: Int): T {
+        var view = views[viewId]
+        if (view == null) {
+            view = itemView.findViewById(viewId)
+            views.put(viewId, view)
+        }
+        return view as T
+    }
+}
 
 abstract class ViewHolderCreator<T> {
     abstract fun isForViewType(data: T?, position: Int): Boolean
     abstract fun getResourceId(): Int
     abstract fun onBindViewHolder(
-            data: T?,
-            items: MutableList<T>?,
-            position: Int,
-            holder: ViewHolderCreator<T>
+        data: T?,
+        items: MutableList<T>?,
+        position: Int,
+        holder: ViewHolderCreator<T>
     )
 
-    var itemView: View? = null
+    var viewHolder: BaseViewHolder? = null
 
-    fun registerItemView(itemView: View?) {
-        this.itemView = itemView
+    fun registerViewHolder(viewHolder: BaseViewHolder?) {
+        this.viewHolder = viewHolder
     }
 
     fun <V : View> findViewById(viewId: Int): V {
         checkItemView()
-        return itemView!!.findViewById(viewId)
+        return viewHolder!!.findViewById(viewId)
     }
 
     private fun checkItemView() {
-        if (itemView == null) {
+        if (viewHolder == null) {
             throw NullPointerException("itemView is null")
         }
     }
@@ -79,15 +89,15 @@ fun <T> ViewHolderCreator<T>.setBackgroundResource(viewId: Int, resid: Int) = ap
 }
 
 fun <T> ViewHolderCreator<T>.visible(id: Int) =
-        apply { findViewById<View>(id).visibility = View.VISIBLE }
+    apply { findViewById<View>(id).visibility = View.VISIBLE }
 
 fun <T> ViewHolderCreator<T>.invisible(id: Int) =
-        apply { findViewById<View>(id).visibility = View.INVISIBLE }
+    apply { findViewById<View>(id).visibility = View.INVISIBLE }
 
 fun <T> ViewHolderCreator<T>.gone(id: Int) = apply { findViewById<View>(id).visibility = View.GONE }
 
 fun <T> ViewHolderCreator<T>.visibility(id: Int, visibility: Int) =
-        apply { findViewById<View>(id).visibility = visibility }
+    apply { findViewById<View>(id).visibility = visibility }
 
 fun <T> ViewHolderCreator<T>.setTextColor(id: Int, color: Int) = apply {
     val view: TextView = findViewById(id)
@@ -100,16 +110,16 @@ fun <T> ViewHolderCreator<T>.setTextSize(id: Int, sp: Int) = apply {
 }
 
 fun <T> ViewHolderCreator<T>.clicked(id: Int, listener: View.OnClickListener?) =
-        apply { findViewById<View>(id).setOnClickListener(listener) }
+    apply { findViewById<View>(id).setOnClickListener(listener) }
 
 fun <T> ViewHolderCreator<T>.itemClicked(listener: View.OnClickListener?) =
-        apply { itemView?.setOnClickListener(listener) }
+    apply { viewHolder?.itemView?.setOnClickListener(listener) }
 
 fun <T> ViewHolderCreator<T>.longClicked(id: Int, listener: OnLongClickListener?) =
-        apply { findViewById<View>(id).setOnLongClickListener(listener) }
+    apply { findViewById<View>(id).setOnLongClickListener(listener) }
 
 fun <T> ViewHolderCreator<T>.isEnabled(id: Int, enable: Boolean = true) =
-        apply { findViewById<View>(id).isEnabled = enable }
+    apply { findViewById<View>(id).isEnabled = enable }
 
 fun <T> ViewHolderCreator<T>.addView(id: Int, vararg views: View?) = apply {
     val viewGroup: ViewGroup = findViewById(id)
@@ -119,10 +129,10 @@ fun <T> ViewHolderCreator<T>.addView(id: Int, vararg views: View?) = apply {
 }
 
 fun <T> ViewHolderCreator<T>.addView(id: Int, view: View?, params: ViewGroup.LayoutParams?) =
-        apply {
-            val viewGroup: ViewGroup = findViewById(id)
-            viewGroup.addView(view, params)
-        }
+    apply {
+        val viewGroup: ViewGroup = findViewById(id)
+        viewGroup.addView(view, params)
+    }
 
 fun <T> ViewHolderCreator<T>.removeAllViews(id: Int) = apply {
     val viewGroup: ViewGroup = findViewById(id)
