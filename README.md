@@ -3,9 +3,19 @@
 
 # 使用方法
 
-只有三个类，所以没打包，大家可以直接下载代码使用。
+```gradle
+allprojects {
+       repositories {
+              ...
+              maven { url 'https://jitpack.io' }
+       }
+}
 
-
+dependencies {
+        implementation 'com.github.EspoirX:EfficientAdapter:v1.0'
+}
+```
+[![](https://jitpack.io/v/EspoirX/EfficientAdapter.svg)](https://jitpack.io/#EspoirX/EfficientAdapter)
 
 
 ## 第一步
