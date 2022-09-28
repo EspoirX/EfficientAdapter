@@ -1,6 +1,8 @@
 # EfficientAdapter
 一个可以提高开发效率的 adapter
 
+（唉，大家还是去用BRV吧，比我这个好多了，-_- ）
+
 # 使用方法
 
 ```gradle
